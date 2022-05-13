@@ -1,6 +1,6 @@
-import 'package:digiport/table_view.dart';
 import 'package:flutter/material.dart';
 import 'table_view.dart';
+
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
 
@@ -33,18 +33,18 @@ class _HomeState extends State<Home> {
                 // Update the state of the app
                 // ...
                 // Then close the drawer
-               // Navigator.pop(context);
+                // Navigator.pop(context);
               },
-            // ),
-            // ListTile(
-            //   title: const Text('Item 2'),
-            //   onTap: () {
-            //     // Update the state of the app
-            //     // ...
-            //     // Then close the drawer
-            //     Navigator.pop(context);
-            //   },
-             ),
+              // ),
+              // ListTile(
+              //   title: const Text('Item 2'),
+              //   onTap: () {
+              //     // Update the state of the app
+              //     // ...
+              //     // Then close the drawer
+              //     Navigator.pop(context);
+              //   },
+            ),
           ],
         ),
       ),

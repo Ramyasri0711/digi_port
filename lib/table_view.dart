@@ -1,3 +1,5 @@
+
+import 'package:digiport/table1.dart';
 import 'package:flutter/material.dart';
 
 class TableView extends StatefulWidget {
@@ -33,7 +35,7 @@ class _TableViewState extends State<TableView> {
         body: const TabBarView(
           children: <Widget>[
             Center(
-              child: Text("Table1"),
+              child: FirstTable(),
             ),
             Center(
               child: Text("Table2"),
@@ -46,5 +48,5 @@ class _TableViewState extends State<TableView> {
       ),
     );
   }
-  }
+}
 
