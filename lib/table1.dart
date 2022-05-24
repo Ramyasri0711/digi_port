@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import 'update_table_content.dart';
 
 class FirstTable extends StatefulWidget {
   const FirstTable({Key? key}) : super(key: key);
@@ -11,6 +10,8 @@ class FirstTable extends StatefulWidget {
 }
 
 class _FirstTableState extends State<FirstTable> {
+  bool _isSearch=false;
+  String _searchKey='department';
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -18,6 +19,75 @@ class _FirstTableState extends State<FirstTable> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
+    //         if (_isSearch)
+    //           Expanded(
+    //               child: TextField(
+    //                 decoration: InputDecoration(
+    //                     hintText: 'Enter search term based on ' +
+    //                         _searchKey
+    //                             .replaceAll(new RegExp('[\\W_]+'), ' ')
+    //                             .toUpperCase(),
+    //                     prefixIcon: IconButton(
+    //                         icon: Icon(Icons.cancel),
+    //                         onPressed: () {
+    //                           setState(() {
+    //                             _isSearch = false;
+    //                           });
+    //                           _initializeData();
+    //                         }),
+    //                     suffixIcon: IconButton(
+    //                         icon: Icon(Icons.search), onPressed: () {})),
+    //                 onSubmitted: (value) {
+    //                   _filterData(value);
+    //                 },
+    //               )),
+    //
+    // _mockPullData() async {
+    // _expanded = List.generate(_currentPerPage!, (index) => false);
+    // setState(() => _isLoading = true);
+    // Future.delayed(const Duration(seconds: 3)).then((value) {
+    // _sourceOriginal.clear();
+    // _sourceOriginal.addAll(_generateData(n: random.nextInt(10000)));
+    // _sourceFiltered = _sourceOriginal;
+    // _total = _sourceFiltered.length;
+    // _source = _sourceFiltered.getRange(0, _currentPerPage!).toList();
+    // setState(() => _isLoading = false);
+    // });
+    // }
+    //
+    // _filterData(value) {
+    // setState(() => _isLoading = true);
+    //
+    // try {
+    // if (value == "" || value == null) {
+    // _sourceFiltered = _sourceOriginal;
+    // } else {
+    // _sourceFiltered = _sourceOriginal
+    //     .where((data) => data[_searchKey!]
+    //     .toString()
+    //     .toLowerCase()
+    //     .contains(value.toString().toLowerCase()))
+    //     .toList();
+    // }
+    //
+    // _total = _sourceFiltered.length;
+    // var _rangeTop = _total < _currentPerPage! ? _total : _currentPerPage!;
+    // _expanded = List.generate(_rangeTop, (index) => false);
+    // _source = _sourceFiltered.getRange(0, _rangeTop).toList();
+    // } catch (e) {
+    // print(e);
+    // }
+    // setState(() => _isLoading = false);
+    // }
+    //
+    // if (!_isSearch)
+    //           IconButton(
+    //               icon: Icon(Icons.search),
+    //               onPressed: () {
+    //                 setState(() {
+    //                   _isSearch = true;
+    //                 });
+    //               }),
             ElevatedButton(
               onPressed: () => {
               showDialog(
@@ -87,10 +157,10 @@ class _AddTableContentState extends State<AddTableContent> {
                       autofocus: false,
                       decoration: const InputDecoration(
                         labelText: 'Dept: ',
-                        labelStyle: const TextStyle(fontSize: 20.0),
-                        border: const OutlineInputBorder(),
+                        labelStyle:  TextStyle(fontSize: 20.0),
+                        border: OutlineInputBorder(),
                         errorStyle:
-                        const TextStyle(color: Colors.redAccent, fontSize: 15),
+                        TextStyle(color: Colors.redAccent, fontSize: 15),
                       ),
                       controller: deptController,
                       validator: (value) {
@@ -162,6 +232,91 @@ class _AddTableContentState extends State<AddTableContent> {
   }
 }
 
+class UpdateTableContent extends StatefulWidget {
+  //const UpdateTableContent({Key? key}) : super(key: key);
+  final String id;
+  const UpdateTableContent({Key? key, required this.id}) : super(key: key);
+  @override
+  State<UpdateTableContent> createState() => _UpdateTableContentState();
+}
+
+class _UpdateTableContentState extends State<UpdateTableContent> {
+  final _formKey = GlobalKey<FormState>();
+  TextEditingController teleController=TextEditingController();
+  TextEditingController deptController=TextEditingController();
+
+  // Updaing Student
+  CollectionReference tableOne =
+  FirebaseFirestore.instance.collection('tableOne');
+
+  Future<void> updateUser(id, dpt, nm) {
+    return tableOne
+        .doc(id)
+        .update({'department': dpt, 'telecomNum': nm,})
+        .then((value) => print("changes Updated"))
+        .catchError((error) => print("Failed to update user: $error"));
+  }
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Form(
+        key: _formKey,
+        child: Container(
+            width: MediaQuery.of(context).size.width / 3,
+            child: Column(
+              children: [
+                Container(
+                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                        hintText: 'Department', border: OutlineInputBorder()),
+                    controller: deptController,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Department cannot be empty";
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                        hintText: 'TelecomNUm', border: OutlineInputBorder()),
+                    controller: teleController,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "TelecomNum cannot be empty";
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+
+
+                ElevatedButton(onPressed: () {
+
+                  if (_formKey.currentState!.validate() && teleController!=null && deptController!=null) {
+                    updateUser(widget.id,deptController.text,teleController.text);
+                    // v.reference.update({'telecomNum':telecontroller,'department':deptController});
+                  }
+                  setState(() {
+                  });
+                  Navigator.pop(context);
+                }, child: const Text('Update')),
+
+              ],
+            )
+
+        ),
+
+      ),
+    );
+  }
+}
+
+
 class ViewTable extends StatefulWidget {
   const ViewTable({Key? key}) : super(key: key);
 
@@ -221,7 +376,18 @@ class _ViewTableState extends State<ViewTable> {
                   const TableRow(
                     children: [
                       TableCell(
-                        child: const Center(
+                        child:  Center(
+                          child: Text(
+                            'Sl.No',
+                            style: TextStyle(
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      TableCell(
+                        child:  Center(
                           child: Text(
                             'Department',
                             style: TextStyle(
@@ -231,7 +397,7 @@ class _ViewTableState extends State<ViewTable> {
                           ),
                         ),
                       ),
-                      const TableCell(
+                      TableCell(
                         child: Center(
                           child: Text(
                             'TelecomeNum',
@@ -242,8 +408,8 @@ class _ViewTableState extends State<ViewTable> {
                           ),
                         ),
                       ),
-                      const TableCell(
-                        child: const Center(
+                       TableCell(
+                        child: Center(
                           child: Text(
                             'Action',
                             style: TextStyle(
@@ -255,9 +421,14 @@ class _ViewTableState extends State<ViewTable> {
                       ),
                     ],
                   ),
-                  for (var i = 0; i < storedocs.length; i++) ...[
+                  for (var i = 0; i < (storedocs.length); i++) ...[
                     TableRow(
                       children: [
+                        TableCell(
+                          child: Center(
+                              child: Text((i+1).toString(),
+                                  style: const TextStyle(fontSize: 18.0))),
+                        ),
                         TableCell(
                           child: Center(
                               child: Text(storedocs[i]['department'],
@@ -276,8 +447,12 @@ class _ViewTableState extends State<ViewTable> {
                                 onPressed: () => {
                                   showDialog(
                                     context: context,
-                                    builder: (context) => UpdateTableContent(id:storedocs[i]['id']),
+                                    builder: (context) => UpdateTableContent(id: storedocs[i]['id']),
                                   ),
+                                // Navigator.push(
+                                // context,
+                                // MaterialPageRoute(builder: (context) => UpdateTableContent(id: storedocs[i]['id']))),
+                                 // AlertDialog(title: Text('Update'),content: Container(child:  UpdateTableContent(id: storedocs[i]['id']),),)
                                 },
                                 icon: const Icon(
                                   Icons.edit,
